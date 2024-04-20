@@ -2,8 +2,8 @@ defmodule Transplaces.Connectors.GooglePlaces do
   @moduledoc """
   Google Places API connector
   """
-  @ilm_lat "34.2071359"
-  @ilm_long "-77.87207"
+  @ilm_lat 34.2071359
+  @ilm_long -77.87207
   @default_results_count 10
   @url "https://places.googleapis.com/v1"
   @searchNearby "/places:searchNearby"
@@ -14,7 +14,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
         latitude: @ilm_lat,
         longitude: @ilm_long
       },
-      radius: "50"
+      radius: 5000.0
     }
   }
 
