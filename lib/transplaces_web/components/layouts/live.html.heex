@@ -1,0 +1,13 @@
+<div class="flex h-screen overflow-hidden bg-white print:h-auto">
+  <%= # link("Skip to main content", to: "#main", class: "sr-only", tabIndex: 0) %>
+  <Phoenix.Component.live_component module={TransplacesWeb.HeaderLive} id="header" />
+  <main
+    id="main"
+    class="min-w-screen-mobile relative flex-1 overflow-y-auto focus:outline-none print:overflow-visible"
+    tabindex="0"
+  >
+    <div class="w-full px-4 py-10 sm:px-6 lg:px-8">
+      <%= @inner_content %>
+    </div>
+  </main>
+</div>
