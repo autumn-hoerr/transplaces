@@ -8,7 +8,7 @@ defmodule TransplacesWeb.HeaderLive do
   @impl Phoenix.LiveComponent
   def render(assigns) do
     ~H"""
-    <header>
+    <header id={@id}>
       <h1>TransPlaces</h1>
       <.nav />
     </header>

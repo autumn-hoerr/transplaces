@@ -53,7 +53,9 @@ defmodule Transplaces.MixProject do
       {:plug_cowboy, "~> 2.5"},
 
       {:ueberauth, "~> 0.10"},
-      {:ueberauth_discord, "~> 0.6"}
+      {:ueberauth_discord, "~> 0.6"},
+
+      {:httpoison, "~> 2.0"}
     ]
   end
 
