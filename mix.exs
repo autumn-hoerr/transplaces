@@ -51,10 +51,9 @@ defmodule Transplaces.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-
+      {:decimal, "~> 2.0"},
       {:ueberauth, "~> 0.10"},
       {:ueberauth_discord, "~> 0.6"},
-
       {:httpoison, "~> 2.0"}
     ]
   end
