@@ -4,6 +4,8 @@ defmodule Transplaces.RatingTest do
   alias Transplaces.Ratings
   alias Transplaces.Places
 
+  require Decimal
+
   setup do
     place = place_fixture()
 
@@ -55,6 +57,34 @@ defmodule Transplaces.RatingTest do
 
     assert rating.trans_friendliness_rating == 0
     assert rating.accessibility_rating == nil
+  end
+
+  test "can return a properly computed average rating", %{place: place} do
+    _rating1 =
+      rating_fixture(%{
+        trans_friendliness_rating: 4,
+        accessibility_rating: 4,
+        overall_rating: 4,
+        employer_rating: 4,
+        place_id: place.id
+      })
+
+    _rating2 =
+      rating_fixture(%{
+        trans_friendliness_rating: 2,
+        accessibility_rating: 2,
+        overall_rating: 2,
+        employer_rating: 2,
+        place_id: place.id
+      })
+
+    assert %{
+             total_ratings: 2,
+             trans_friendliness_average: Decimal.new("3.0000000000000000"),
+             accessibility_rating: Decimal.new("3.0000000000000000"),
+             overall_average: Decimal.new("3.0000000000000000"),
+             employer_average: Decimal.new("3.0000000000000000")
+           } == Ratings.with_average_ratings_for_place(place.id)
   end
 
   def rating_fixture(attrs \\ %{}) do

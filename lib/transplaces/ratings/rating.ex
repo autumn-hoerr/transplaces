@@ -13,7 +13,7 @@ defmodule Transplaces.Ratings.Rating do
     field :employer_rating, :integer, default: 0
 
     belongs_to :place, Transplaces.Places.Place
-    belongs_to :author, Transplaces.Users.User
+    belongs_to :author, Transplaces.Accounts.User
 
     timestamps()
   end
