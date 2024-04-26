@@ -4,15 +4,6 @@ defmodule Transplaces.PlacesTest do
   alias Transplaces.Places
   alias Transplaces.Places.PlaceTypes
 
-  @valid_attrs %{
-    name: "test place",
-    description: "A nice place"
-  }
-
-  @invalid_attrs %{
-    name: nil
-  }
-
   test "list place types" do
     places =
       Enum.map(1..3, fn n ->

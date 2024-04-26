@@ -14,7 +14,7 @@ defmodule Transplaces.Ratings do
     Repo.get!(Rating, rating_id)
   end
 
-  def get_rating_for_place(place_id) do
+  def get_ratings_for_place(place_id) do
     Repo.all(from r in Rating, where: r.place_id == ^place_id)
   end
 
