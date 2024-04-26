@@ -4,6 +4,9 @@ defmodule Transplaces.Places.Place do
   """
   use Transplaces.Schema
 
+  # alias Transplaces.Places
+  alias Transplaces.Places.PlaceTypes
+
   @type id() :: Ecto.UUID.t()
 
   schema "places" do
@@ -16,6 +19,7 @@ defmodule Transplaces.Places.Place do
     field :minorityOwned, :boolean
     field :womanOwned, :boolean
     field :lgbtqOwned, :boolean
+    field :place_types_list, {:array, :integer}, default: [], virtual: true
     timestamps()
 
     many_to_many :place_types, Transplaces.Places.PlaceType, join_through: "places_place_types"
@@ -23,7 +27,7 @@ defmodule Transplaces.Places.Place do
     has_many :comments, Transplaces.Ratings.Comment
   end
 
-  def changeset(%Ecto.Changeset{} = place, attrs) do
+  def changeset(place \\ %__MODULE__{}, attrs) do
     place
     |> cast(attrs, [
       :googlePlaceId,
@@ -36,25 +40,15 @@ defmodule Transplaces.Places.Place do
       :womanOwned,
       :lgbtqOwned
     ])
-    |> cast_assoc(:place_types)
+    |> maybe_put_place_types(attrs)
     |> validate_required([:name])
   end
 
-  def changeset(%__MODULE__{} = place, attrs) do
-    place
-    |> cast(attrs, [
-      :googlePlaceId,
-      :name,
-      :address,
-      :description,
-      :accessibilityOptions,
-      :primaryType,
-      :minorityOwned,
-      :womanOwned,
-      :lgbtqOwned
-    ])
-    |> cast_assoc(:place_types)
-    |> validate_required([:name])
+  defp maybe_put_place_types(changeset, %{place_types_list: []} = _attrs), do: changeset
+
+  defp maybe_put_place_types(changeset, attrs) do
+    placetypes = PlaceTypes.get_place_types(attrs[:place_types_list])
+    put_assoc(changeset, :place_types, placetypes)
   end
 end
 

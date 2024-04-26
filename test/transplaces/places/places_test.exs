@@ -47,22 +47,29 @@ defmodule Transplaces.PlacesTest do
         place_type_fixture(%{name: "test type #{n}"})
       end)
 
-    place =
+    place1 =
       place_fixture(%{
-        name: "hi",
-        place_types: %{0 => %{id: pt1.id, name: pt1.name}, 1 => %{id: pt2.id, name: pt2.name}}
+        name: "Place 1",
+        place_types_list: [pt1.id, pt2.id]
       })
 
-    # place2 = place_fixture(%{place_types: %{0 => pt2, 1 => pt3}})
-    # place3 = place_fixture(%{place_types: %{0 => pt3, 1 => pt1}})
-    # place2 = place_fixture(%{place_types: })
-    # place3 = place_fixture(%{place_types: [pt3, pt1]})
+    place2 =
+      place_fixture(%{
+        name: "Place 2",
+        place_types_list: [pt2.id, pt3.id]
+      })
+
+    place3 =
+      place_fixture(%{
+        name: "Place 3",
+        place_types_list: [pt3.id, pt1.id]
+      })
 
     test_type_w_places = PlaceTypes.get_all_places_of_type("test type 1")
-    IO.inspect(PlaceTypes.list_place_types())
-    # assert Enum.member?(test_type_w_places.places, place)
-    # assert Enum.member?(test_type_w_places.places, place3)
-    # refute Enum.member?(test_type_w_places.places, place2)
+
+    assert test_type_w_places.places |> Enum.map(& &1.name) |> Enum.member?(place1.name)
+    assert test_type_w_places.places |> Enum.map(& &1.name) |> Enum.member?(place3.name)
+    refute test_type_w_places.places |> Enum.map(& &1.name) |> Enum.member?(place2.name)
   end
 
   def place_fixture(attrs \\ %{}) do
@@ -70,7 +77,7 @@ defmodule Transplaces.PlacesTest do
       %{
         name: "test place",
         description: "A nice place",
-        place_types: []
+        place_types_list: []
       }
       |> Map.merge(attrs)
       |> Places.create_place()
@@ -81,7 +88,8 @@ defmodule Transplaces.PlacesTest do
   def place_type_fixture(attrs \\ %{}) do
     {:ok, place_type} =
       %{
-        name: "test place type"
+        name: "test place type",
+        places_list: []
       }
       |> Map.merge(attrs)
       |> PlaceTypes.create_place_type()

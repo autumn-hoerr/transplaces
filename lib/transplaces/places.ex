@@ -5,6 +5,7 @@ defmodule Transplaces.Places do
   Future:
   maybe break the placetypes out later
   """
+  import Ecto.Query
   alias Transplaces.Repo
   alias Transplaces.Places.Place
 
@@ -21,6 +22,11 @@ defmodule Transplaces.Places do
   def get_place!(id) do
     Place
     |> Repo.get!(id)
+  end
+
+  def get_places(ids) do
+    from(p in Place, where: p.id in ^ids)
+    |> Repo.all()
   end
 
   def list_places() do

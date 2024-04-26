@@ -16,11 +16,16 @@ defmodule Transplaces.Places.PlaceTypes do
     |> Repo.get(id)
   end
 
+  def get_place_types(ids) do
+    from(pt in PlaceType, where: pt.id in ^ids)
+    |> Repo.all()
+  end
+
   def get_all_places_of_type(query \\ PlaceType, type) do
     query
     |> preload(:places)
     |> where([pt], pt.name == ^type)
-    |> Repo.all()
+    |> Repo.one()
   end
 
   def create_place_type(attrs) do
