@@ -26,15 +26,13 @@ defmodule Transplaces.RatingTest do
     assert Ratings.get_ratings_for_place(place.id) == [rating]
   end
 
-  # TBD if this is how we actually want to do this. It might be better
-  # to check that one of them is not nil instead of the total > 0
-  test "will complain if all zeroes are provided", %{place: place} do
+  test "will complain if all nils are provided", %{place: place} do
     {:error, changeset} =
       Ratings.create_rating(%{
-        trans_friendliness_rating: 0,
-        accessibility_rating: 0,
-        overall_rating: 0,
-        employer_rating: 0,
+        trans_friendliness_rating: nil,
+        accessibility_rating: nil,
+        overall_rating: nil,
+        employer_rating: nil,
         place_id: place.id
       })
 
@@ -43,6 +41,20 @@ defmodule Transplaces.RatingTest do
     assert changeset.errors == [
              trans_friendliness_rating: {"At least one rating must be provided", []}
            ]
+  end
+
+  test "one rating is enough to pass validation", %{place: place} do
+    {:ok, rating} =
+      Ratings.create_rating(%{
+        trans_friendliness_rating: 0,
+        accessibility_rating: nil,
+        overall_rating: nil,
+        employer_rating: nil,
+        place_id: place.id
+      })
+
+    assert rating.trans_friendliness_rating == 0
+    assert rating.accessibility_rating == nil
   end
 
   def rating_fixture(attrs \\ %{}) do

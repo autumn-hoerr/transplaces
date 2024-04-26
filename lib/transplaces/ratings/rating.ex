@@ -36,14 +36,20 @@ defmodule Transplaces.Ratings.Rating do
   end
 
   def validate_has_one_of(changeset, fields) do
-    review_total =
+    num_nil_reviews =
       fields
       |> Enum.map(fn field ->
-        get_field(changeset, field, 0)
+        get_field(changeset, field, nil)
       end)
-      |> Enum.sum()
+      |> Enum.reduce(0, fn rating, acc ->
+        case rating do
+          nil -> acc + 1
+          _ -> acc
+        end
+      end)
 
-    if review_total == 0 do
+    # they can all be zero, but not all nil
+    if num_nil_reviews == Enum.count(fields) do
       add_error(changeset, :trans_friendliness_rating, "At least one rating must be provided")
     else
       changeset
