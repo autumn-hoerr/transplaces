@@ -112,8 +112,8 @@ defmodule Transplaces.Connectors.GooglePlaces do
     place[key]
   end
 
-  defp response_field_to_db_field(key, place) do
-    IO.inspect(place[key], label: "generic handler for #{key}")
+  defp response_field_to_db_field("types" = key, place) do
+    PlaceTypes.ids_from_names(place[key])
   end
 
   defp get_url(endpoint), do: @url <> endpoint
