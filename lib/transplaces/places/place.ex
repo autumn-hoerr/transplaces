@@ -14,7 +14,7 @@ defmodule Transplaces.Places.Place do
     field :name, :string
     field :address, :string
     field :description, :string
-    field :accessibilityOptions, :string
+    field :accessibility_opts, :map
     field :primaryType, :string
     field :minorityOwned, :boolean
     field :womanOwned, :boolean
@@ -34,7 +34,7 @@ defmodule Transplaces.Places.Place do
       :name,
       :address,
       :description,
-      :accessibilityOptions,
+      :accessibility_opts,
       :primaryType,
       :minorityOwned,
       :womanOwned,

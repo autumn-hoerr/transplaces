@@ -5,6 +5,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
 
   require Decimal
   alias Transplaces.Places.PlaceTypes
+  alias Transplaces.Places
   alias Transplaces.Repo
 
   @ilm_lat 34.2071359
@@ -24,6 +25,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
     }
   }
   @fieldsWanted [
+    "places.id",
     "places.displayName",
     "places.formattedAddress",
     "places.editorialSummary",
@@ -72,7 +74,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
     response
     |> Enum.each(fn place ->
       place
-      # |> extract_and_save_placetypes()
+      |> extract_and_save_placetypes()
       |> save_place()
     end)
   end
@@ -81,54 +83,64 @@ defmodule Transplaces.Connectors.GooglePlaces do
     place
     |> Map.keys()
     |> Enum.reduce(%{}, fn key, acc ->
-      Map.put(acc, key, response_field_to_db_field(key, place))
+      {dbkey, value} = response_field_to_db_field(key, place)
+      Map.put(acc, dbkey, value)
     end)
+    |> Places.create_place()
   end
 
-  # defp extract_and_save_placetypes(place) do
-  #   place
-  #   |> Map.get("types")
-  #   # construct an ecto.multi to do this all at once
-  #   |> PlaceTypes.create_place_types()
-  #   # insert the place types?
-  #   |> Repo.transaction()
+  defp extract_and_save_placetypes(place) do
+    place
+    |> Map.get("types")
+    # construct an ecto.multi to do this all at once
+    |> PlaceTypes.create_place_types()
+    # insert the place types?
+    |> Repo.transaction()
 
-  #   place
-  # end
+    place
+  end
+
+  defp response_field_to_db_field("id" = key, place) do
+    {:googlePlaceId, place[key]}
+  end
 
   defp response_field_to_db_field("displayName" = key, place) do
-    place[key]["text"]
+    {:name, place[key]["text"]}
   end
 
   defp response_field_to_db_field("formattedAddress" = key, place) do
-    place[key]
+    {:address, place[key]}
   end
 
   defp response_field_to_db_field("editorialSummary" = key, place) do
-    place[key]["text"]
+    {:description, place[key]["text"]}
   end
 
   defp response_field_to_db_field("primaryType" = key, place) do
-    place[key]
+    {:primaryType, place[key]}
   end
 
   defp response_field_to_db_field("types" = key, place) do
-    PlaceTypes.ids_from_names(place[key])
+    # these already exist in the db, so we just need to get the ids
+    {:place_types_list, PlaceTypes.ids_from_names(place[key])}
   end
+
+  defp response_field_to_db_field("accessibilityOptions" = key, place) do
+    {:accessibility_opts, place[key]}
+  end
+
+  defp response_field_to_db_field(key, place), do: {String.to_existing_atom(key), place[key]}
 
   defp get_url(endpoint), do: @url <> endpoint
 end
 
-# field :googlePlaceId, :string
-# field :name, :string
-# field :address, :string
-# field :description, :string
-# field :accessibilityOptions, :string
-# field :primaryType, :string
-# field :minorityOwned, :boolean
-# field :womanOwned, :boolean
-# field :lgbtqOwned, :boolean
-# field :place_types_list, {:array, :integer}, default: [], virtual: true
+# field :googlePlaceId, :string x
+# field :name, :string x
+# field :address, :string x
+# field :description, :string x
+# field :accessibility_opts, :map x
+# field :primaryType, :string x
+# field :place_types_list, {:array, :integer}, default: [], virtual: true x
 # timestamps()
 
 # fields from google places api
