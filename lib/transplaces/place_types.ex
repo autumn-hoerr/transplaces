@@ -3,6 +3,7 @@ defmodule Transplaces.Places.PlaceTypes do
   Context for place types
   """
   import Ecto.Query
+  alias Ecto.Multi
   alias Transplaces.Repo
   alias Transplaces.Places.PlaceType
 
@@ -21,6 +22,12 @@ defmodule Transplaces.Places.PlaceTypes do
     |> Repo.all()
   end
 
+  def ids_from_names(names) do
+    from(pt in PlaceType, where: pt.name in ^names)
+    |> select([pt], pt.id)
+    |> Repo.all()
+  end
+
   def get_all_places_of_type(query \\ PlaceType, type) do
     query
     |> preload(:places)
@@ -28,11 +35,31 @@ defmodule Transplaces.Places.PlaceTypes do
     |> Repo.one()
   end
 
+  def create_placetype_changeset(placetype \\ %PlaceType{}, attrs) do
+    placetype
+    |> PlaceType.changeset(attrs)
+  end
+
   def create_place_type(attrs) do
     %PlaceType{}
     |> PlaceType.changeset(attrs)
     |> Repo.insert()
   end
+
+  def create_place_types(list) when is_list(list) do
+    list
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn {place_type, index}, multi ->
+      Multi.insert(
+        multi,
+        {:place_type, index},
+        create_placetype_changeset(%{name: place_type, places_list: []}),
+        on_conflict: :nothing
+      )
+    end)
+  end
+
+  def create_place_types(list) when is_binary(list), do: create_place_type(%{name: list})
 
   def update_place_type(%PlaceType{} = place_type, attrs) do
     place_type

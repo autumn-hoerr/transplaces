@@ -24,8 +24,6 @@ defmodule Transplaces.Ratings do
     |> Repo.insert()
   end
 
-  # todo: set defaults for ratings to 0 so that nil means no ratings
-  # and we don't need to coalesce a bunch of nils to 0
   def with_average_ratings_for_place(place_id) do
     from(r in Rating,
       where: r.place_id == ^place_id,
