@@ -7,23 +7,14 @@ defmodule Transplaces.Connectors.GooglePlaces do
   alias Transplaces.Places.PlaceTypes
   alias Transplaces.Places
   alias Transplaces.Repo
+  alias Transplaces.Connectors.Epicenters
+  alias Transplaces.Connectors.GoogleTypes
 
-  @ilm_lat 34.2071359
-  @ilm_long -77.87207
-  @default_results_count 10
+  # 20 is the max results per request
+  @default_results_count 20
   @url "https://places.googleapis.com/v1"
   @searchNearby "/places:searchNearby"
   # @placeDetails "/places/"
-  @locationRestriction %{
-    circle: %{
-      center: %{
-        latitude: @ilm_lat,
-        longitude: @ilm_long
-      },
-      # 30 miles in meters, 50000 meters max api limit
-      radius: Decimal.mult(30, 1609)
-    }
-  }
   @fieldsWanted [
     "places.id",
     "places.displayName",
@@ -34,13 +25,27 @@ defmodule Transplaces.Connectors.GooglePlaces do
     "places.types"
   ]
 
-  def search_nearby_ilm() do
+  def update_places() do
+    location = Epicenters.ilm()
+    types = GoogleTypes.google_types()
+
+    Enum.each(types, fn type ->
+      search_nearby(type, location)
+    end)
+  end
+
+  # def search_test(type, location),
+  #   do: IO.inspect({type, location_restriction(location)}, label: "dry run")
+
+  def search_nearby(type, location) do
     url = get_url(@searchNearby)
+    now = Date.utc_today() |> Date.to_string()
+    file_name = "googleplaces-#{type}-#{now}.json"
 
     body =
       %{}
-      |> Map.merge(%{includedTypes: "restaurant"})
-      |> Map.merge(%{locationRestriction: @locationRestriction})
+      |> Map.merge(%{includedTypes: type})
+      |> Map.merge(%{locationRestriction: location_restriction(location)})
       |> Map.merge(%{maxResultCount: @default_results_count})
       |> Jason.encode!()
 
@@ -56,6 +61,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
         case Jason.decode(body) do
           {:ok, places} ->
             Map.get(places, "places")
+            |> save_response_to_file(file_name)
             |> save_places()
 
           {:error, reason} ->
@@ -70,6 +76,8 @@ defmodule Transplaces.Connectors.GooglePlaces do
     end
   end
 
+  defp save_places(nil), do: :ok
+
   defp save_places(response) do
     response
     |> Enum.each(fn place ->
@@ -78,6 +86,8 @@ defmodule Transplaces.Connectors.GooglePlaces do
       |> save_place()
     end)
   end
+
+  defp save_place(nil), do: :ok
 
   defp save_place(place) do
     place
@@ -89,15 +99,32 @@ defmodule Transplaces.Connectors.GooglePlaces do
     |> Places.create_place()
   end
 
+  defp extract_and_save_placetypes(nil), do: :ok
+
   defp extract_and_save_placetypes(place) do
     place
     |> Map.get("types")
     # construct an ecto.multi to do this all at once
     |> PlaceTypes.create_place_types()
-    # insert the place types?
     |> Repo.transaction()
 
     place
+  end
+
+  defp location_restriction(location) do
+    %{
+      circle: %{
+        center: location,
+        # 30 miles in meters, 50000 meters max api limit
+        radius: Decimal.mult(30, 1609)
+      }
+    }
+  end
+
+  defp save_response_to_file(response, filename) do
+    File.write!(filename, Jason.encode!(response))
+
+    response
   end
 
   defp response_field_to_db_field("id" = key, place) do
@@ -133,81 +160,3 @@ defmodule Transplaces.Connectors.GooglePlaces do
 
   defp get_url(endpoint), do: @url <> endpoint
 end
-
-# field :googlePlaceId, :string x
-# field :name, :string x
-# field :address, :string x
-# field :description, :string x
-# field :accessibility_opts, :map x
-# field :primaryType, :string x
-# field :place_types_list, {:array, :integer}, default: [], virtual: true x
-# timestamps()
-
-# fields from google places api
-# @basic_fields = [
-#   places.accessibilityOptions,
-#   places.addressComponents,
-#   places.adrFormatAddress,
-#   places.businessStatus,
-#   places.displayName,
-#   places.formattedAddress,
-#   places.googleMapsUri,
-#   places.iconBackgroundColor,
-#   places.iconMaskBaseUri,
-#   places.id,
-#   places.location,
-#   places.name*,
-#   places.photos,
-#   places.plusCode,
-#   places.primaryType,
-#   places.primaryTypeDisplayName,
-#   places.shortFormattedAddress,
-#   places.subDestinations,
-#   places.types,
-#   places.utcOffsetMinutes,
-#   places.viewport ]
-
-# @advanced_fields = [
-#    places.currentOpeningHours,
-#    places.currentSecondaryOpeningHours,
-#    places.internationalPhoneNumber,
-#    places.nationalPhoneNumber,
-#    places.priceLevel,
-#    places.rating,
-#    places.regularOpeningHours,
-#    places.regularSecondaryOpeningHours,
-#    places.userRatingCount,
-#    places.websiteUri
-# ]
-
-# @preferred_fields = [
-#   places.allowsDogs,
-#   places.curbsidePickup,
-#   places.delivery,
-#   places.dineIn,
-#   places.editorialSummary,
-#   places.evChargeOptions,
-#   places.fuelOptions,
-#   places.goodForChildren,
-#   places.goodForGroups,
-#   places.goodForWatchingSports,
-#   places.liveMusic,
-#   places.menuForChildren,
-#   places.parkingOptions,
-#   places.paymentOptions,
-#   places.outdoorSeating,
-#   places.reservable,
-#   places.restroom,
-#   places.reviews,
-#   places.servesBeer,
-#   places.servesBreakfast,
-#   places.servesBrunch,
-#   places.servesCocktails,
-#   places.servesCoffee,
-#   places.servesDesserts,
-#   places.servesDinner,
-#   places.servesLunch,
-#   places.servesVegetarianFood,
-#   places.servesWine,
-#   places.takeout
-# ]

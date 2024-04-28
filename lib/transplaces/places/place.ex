@@ -28,8 +28,7 @@ defmodule Transplaces.Places.Place do
   end
 
   def changeset(place \\ %__MODULE__{}, attrs) do
-    place
-    |> cast(attrs, [
+    allowed = [
       :googlePlaceId,
       :name,
       :address,
@@ -39,9 +38,15 @@ defmodule Transplaces.Places.Place do
       :minorityOwned,
       :womanOwned,
       :lgbtqOwned
-    ])
+    ]
+
+    required = [:name, :address]
+
+    place
+    |> cast(attrs, allowed)
     |> maybe_put_place_types(attrs)
-    |> validate_required([:name])
+    |> validate_required(required)
+    |> unique_constraint([:name, :address])
   end
 
   defp maybe_put_place_types(changeset, %{place_types_list: []} = _attrs), do: changeset

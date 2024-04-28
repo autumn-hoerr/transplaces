@@ -37,7 +37,7 @@ defmodule Transplaces.Places do
   def create_place(attrs) do
     %Place{}
     |> Place.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(on_conflict: :nothing)
   end
 
   def update_place(%Place{} = place, attrs) do

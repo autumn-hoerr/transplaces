@@ -25,14 +25,11 @@ defmodule Transplaces.Repo.Migrations.CreatePlaceTable do
     end
 
     create table(:places_place_types, primary_key: false) do
-      add :place_id, references(:places, on_delete: :delete_all, type: :uuid), primary_key: true
+      add :place_id, :uuid, primary_key: true
 
-      add :place_type_id, references(:place_types, on_delete: :delete_all, type: :uuid),
-        primary_key: true
+      add :place_type_id, :uuid, primary_key: true
     end
 
     create unique_index(:place_types, [:name])
-    create index(:places_place_types, [:place_id])
-    create index(:places_place_types, [:place_type_id])
   end
 end

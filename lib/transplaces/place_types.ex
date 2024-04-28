@@ -59,7 +59,8 @@ defmodule Transplaces.Places.PlaceTypes do
     end)
   end
 
-  def create_place_types(list) when is_binary(list), do: create_place_type(%{name: list})
+  def create_place_types(list) when is_binary(list),
+    do: create_place_type(%{name: list, places_list: []})
 
   def update_place_type(%PlaceType{} = place_type, attrs) do
     place_type
