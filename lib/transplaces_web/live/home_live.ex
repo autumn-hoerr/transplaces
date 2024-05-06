@@ -12,6 +12,7 @@ defmodule TransplacesWeb.HomeLive do
         TransPlaces is a private resource for the Wilmington area trans community to share experiences
       </p>
       <p>Access is only granted through the Discord server</p>
+      <p><.link href={~p"/auth/discord"}>Log in with Discord</.link></p>
     </div>
     """
   end

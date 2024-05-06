@@ -3,14 +3,14 @@ defmodule TransplacesWeb.HeaderLive do
   Header display
   """
   use TransplacesWeb, :live_component
-  import TransplacesWeb.Nav
+  alias TransplacesWeb.Nav
 
   @impl Phoenix.LiveComponent
   def render(assigns) do
     ~H"""
     <header id={@id}>
       <h1>TransPlaces</h1>
-      <.nav />
+      <Nav.nav />
     </header>
     """
   end

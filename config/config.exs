@@ -61,7 +61,7 @@ config :phoenix, :json_library, Jason
 
 config :ueberauth, Ueberauth,
   providers: [
-    discord: {Ueberauth.Strategy.Discord, []}
+    discord: {Ueberauth.Strategy.Discord, default_scope: "identify email guilds"}
   ]
 
 import_config "#{config_env()}.secret.exs"

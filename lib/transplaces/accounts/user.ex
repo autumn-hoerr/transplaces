@@ -6,6 +6,7 @@ defmodule Transplaces.Accounts.User do
 
   schema "users" do
     field :email, :string
+    field :active, :boolean, default: true
     field :name, :string
     field :role, :string, default: "user"
     field :last_login, :utc_datetime

@@ -26,11 +26,13 @@ defmodule Transplaces.Connectors.GooglePlaces do
   ]
 
   def update_places() do
-    location = Epicenters.ilm()
+    locations = Epicenters.locations()
     types = GoogleTypes.google_types()
 
-    Enum.each(types, fn type ->
-      search_nearby(type, location)
+    Enum.each(locations, fn location ->
+      Enum.each(types, fn type ->
+        search_nearby(type, location)
+      end)
     end)
   end
 
@@ -39,8 +41,8 @@ defmodule Transplaces.Connectors.GooglePlaces do
 
   def search_nearby(type, location) do
     url = get_url(@searchNearby)
-    now = Date.utc_today() |> Date.to_string()
-    file_name = "googleplaces-#{type}-#{now}.json"
+    # now = Date.utc_today() |> Date.to_string()
+    # file_name = "googleplaces-#{type}-#{now}.json"
 
     body =
       %{}
@@ -61,7 +63,7 @@ defmodule Transplaces.Connectors.GooglePlaces do
         case Jason.decode(body) do
           {:ok, places} ->
             Map.get(places, "places")
-            |> save_response_to_file(file_name)
+            # |> save_response_to_file(file_name)
             |> save_places()
 
           {:error, reason} ->
@@ -121,11 +123,11 @@ defmodule Transplaces.Connectors.GooglePlaces do
     }
   end
 
-  defp save_response_to_file(response, filename) do
-    File.write!(filename, Jason.encode!(response))
+  # defp save_response_to_file(response, filename) do
+  #   File.write!(filename, Jason.encode!(response))
 
-    response
-  end
+  #   response
+  # end
 
   defp response_field_to_db_field("id" = key, place) do
     {:googlePlaceId, place[key]}

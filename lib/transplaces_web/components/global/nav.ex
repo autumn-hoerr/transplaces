@@ -4,16 +4,13 @@ defmodule TransplacesWeb.Nav do
   """
   use TransplacesWeb, :html
 
-  @links [
-    {"/", "Home"},
-    {"/about", "About"},
-    {"/contact", "Contact"},
-    {"/auth", "Login"},
-    {"/auth/delete", "Logout"}
-  ]
-
   def nav(assigns) do
-    assigns = assign(assigns, :links, @links)
+    assigns =
+      assign(assigns, :links, [
+        {~p"/", "Home"},
+        {~p"/auth/discord", "Login"},
+        {~p"/auth/delete", "Logout"}
+      ])
 
     ~H"""
     <nav>

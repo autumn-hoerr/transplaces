@@ -54,7 +54,8 @@ defmodule Transplaces.MixProject do
       {:decimal, "~> 2.0"},
       {:ueberauth, "~> 0.10"},
       {:ueberauth_discord, "~> 0.6"},
-      {:httpoison, "~> 2.0"}
+      {:httpoison, "~> 2.0"},
+      {:guardian, "~> 2.0"}
     ]
   end
 

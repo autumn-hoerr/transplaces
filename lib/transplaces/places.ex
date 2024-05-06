@@ -2,8 +2,6 @@ defmodule Transplaces.Places do
   @moduledoc """
   Context for places and placetypes
 
-  Future:
-  maybe break the placetypes out later
   """
   import Ecto.Query
   alias Transplaces.Repo
@@ -26,6 +24,14 @@ defmodule Transplaces.Places do
 
   def get_places(ids) do
     from(p in Place, where: p.id in ^ids)
+    |> Repo.all()
+  end
+
+  def get_place_like(query) do
+    from(p in Place,
+      where: ilike(p.name, ^"%#{query}%"),
+      limit: 20
+    )
     |> Repo.all()
   end
 
