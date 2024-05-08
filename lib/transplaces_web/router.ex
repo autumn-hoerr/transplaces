@@ -14,15 +14,21 @@ defmodule TransplacesWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authenticated do
+    plug Transplaces.Authentication.Pipeline
+    plug Guardian.Plug.EnsureAuthenticated
+    plug Transplaces.Authentication.CurrentUser
+  end
+
   # AUTH ROUTES
 
   scope "/auth", TransplacesWeb do
     pipe_through :browser
 
-    get "/:provider", AuthController, :request
-    get "/:provider/callback", AuthController, :callback
-    post "/:provider/callback", AuthController, :callback
-    delete "/logout", AuthController, :delete
+    get "/:provider", Authentication.Controller, :request
+    get "/:provider/callback", Authentication.Controller, :callback
+    post "/:provider/callback", Authentication.Controller, :callback
+    delete "/logout", Authentication.Controller, :delete
   end
 
   scope "/", TransplacesWeb do

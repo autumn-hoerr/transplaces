@@ -1,9 +1,10 @@
-defmodule TransplacesWeb.AuthController do
+defmodule TransplacesWeb.Authentication.Controller do
   use TransplacesWeb, :controller
   plug Ueberauth
 
   alias Ueberauth.Strategy.Helpers
   alias Transplaces.Accounts
+  alias Transplaces.Authentication.Guardian
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -11,6 +12,8 @@ defmodule TransplacesWeb.AuthController do
 
   def delete(conn, _params) do
     conn
+    |> fetch_session()
+    |> Guardian.Plug.sign_out()
     |> put_flash(:info, "You have been logged out!")
     |> clear_session()
     |> redirect(to: "/")
@@ -27,8 +30,9 @@ defmodule TransplacesWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
-        |> put_session(:current_user, user)
         |> configure_session(renew: true)
+        |> discord_sign_in(user)
+        |> dbg()
         |> redirect(to: "/")
 
       {:error, reason} ->
@@ -37,4 +41,7 @@ defmodule TransplacesWeb.AuthController do
         |> redirect(to: "/")
     end
   end
+
+  def discord_sign_in(conn, user),
+    do: Guardian.Plug.sign_in(conn, %{:email => user.email})
 end
