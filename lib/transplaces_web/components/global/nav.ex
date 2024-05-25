@@ -3,6 +3,7 @@ defmodule TransplacesWeb.Nav do
   Navigation links and list
   """
   use TransplacesWeb, :html
+  alias TransplacesWeb.PlacesSearch
 
   def nav(assigns) do
     assigns =
@@ -14,6 +15,7 @@ defmodule TransplacesWeb.Nav do
 
     ~H"""
     <nav>
+      <PlacesSearch.places_search />
       <ul>
         <li :for={{path, name} <- @links}>
           <a href={"#{path}"}><%= name %></a>

@@ -27,7 +27,7 @@ defmodule Transplaces.Places do
     |> Repo.all()
   end
 
-  def get_place_like(query) do
+  def search_places(query) do
     from(p in Place,
       where: ilike(p.name, ^"%#{query}%"),
       limit: 20
