@@ -9,13 +9,18 @@ defmodule Transplaces.Places.Place do
 
   @type id() :: Ecto.UUID.t()
 
+  @derive {
+    Flop.Schema,
+    filterable: [:name, :primary_type], sortable: [:name, :primary_type]
+  }
+
   schema "places" do
     field :googlePlaceId, :string
     field :name, :string
     field :address, :string
     field :description, :string
     field :accessibility_opts, :map
-    field :primaryType, :string
+    field :primary_type, :string
     field :minorityOwned, :boolean
     field :womanOwned, :boolean
     field :lgbtqOwned, :boolean
@@ -34,7 +39,7 @@ defmodule Transplaces.Places.Place do
       :address,
       :description,
       :accessibility_opts,
-      :primaryType,
+      :primary_type,
       :minorityOwned,
       :womanOwned,
       :lgbtqOwned

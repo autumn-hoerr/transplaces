@@ -85,13 +85,13 @@ defmodule Transplaces.Connectors.Epicenters do
   def locations() do
     [
       ilm(),
-      topsail(),
-      hollyridge(),
-      camp_lejeune(),
-      jacksonville(),
-      swansboro(),
-      morehead_city(),
-      new_bern()
+      # topsail(),
+      # hollyridge(),
+      # camp_lejeune(),
+      # jacksonville(),
+      # swansboro(),
+      # morehead_city(),
+      # new_bern()
     ]
   end
 end

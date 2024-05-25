@@ -89,8 +89,6 @@ defmodule Transplaces.Connectors.GooglePlaces do
     end)
   end
 
-  defp save_place(nil), do: :ok
-
   defp save_place(place) do
     place
     |> Map.keys()

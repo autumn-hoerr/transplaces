@@ -64,11 +64,12 @@ config :ueberauth, Ueberauth,
     discord: {Ueberauth.Strategy.Discord, default_scope: "identify email guilds"}
   ]
 
-config :transplaces, MyApp.Guardian,
+config :transplaces, Transplaces.Guardian,
   issuer: "transplaces",
   secret_key:
     to_string(config_env()) <> "PODvI7wxZ2dGmVDkuM0s/L5j+2W1BAF1TJtSuZhfxSw1vSBO0BRrV52QUCkl+fCa"
 
+config :flop, repo: Transplaces.Repo
 import_config "#{config_env()}.secret.exs"
 
 # Import environment specific config. This must remain at the bottom

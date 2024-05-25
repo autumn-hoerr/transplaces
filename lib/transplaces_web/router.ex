@@ -36,6 +36,12 @@ defmodule TransplacesWeb.Router do
     live("/", HomeLive)
   end
 
+  scope "/places", TransplacesWeb do
+    pipe_through [:browser]
+    live("/", PlacesLive)
+    live("/:id", PlaceLive)
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", TransplacesWeb do
   #   pipe_through :api

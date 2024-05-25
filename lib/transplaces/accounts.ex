@@ -15,9 +15,9 @@ defmodule Transplaces.Accounts do
     |> Repo.insert(on_conflict: :nothing)
   end
 
-  def update(%User{} = user) do
-    %User{}
-    |> User.changeset(user)
+  def update(%User{} = user, attrs) do
+    user
+    |> User.changeset(attrs)
     |> Repo.update()
   end
 

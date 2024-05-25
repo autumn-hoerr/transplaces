@@ -40,6 +40,16 @@ defmodule Transplaces.Places do
     |> Repo.all()
   end
 
+  def list_a_few_places() do
+    Place
+    |> limit(25)
+    |> Repo.all()
+  end
+
+  def count_places() do
+    Repo.aggregate(Place, :count)
+  end
+
   def create_place(attrs) do
     %Place{}
     |> Place.changeset(attrs)
