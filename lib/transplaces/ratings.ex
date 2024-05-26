@@ -24,6 +24,11 @@ defmodule Transplaces.Ratings do
     |> Repo.insert()
   end
 
+  def rating_changeset(rating \\ %Rating{}, attrs \\ %{}) do
+    rating
+    |> Rating.changeset(attrs)
+  end
+
   def with_average_ratings_for_place(place_id) do
     from(r in Rating,
       where: r.place_id == ^place_id,

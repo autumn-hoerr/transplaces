@@ -19,12 +19,7 @@ defmodule TransplacesWeb.PlacesSearch do
   def render(assigns) do
     ~H"""
     <div>
-      <.simple_form
-        for={@search_form}
-        phx-submit="search_submitted"
-        phx-change="search_changed"
-        phx-target={@myself}
-      >
+      <.simple_form for={@search_form} phx-change="search_changed" phx-target={@myself}>
         <.live_select
           placeholder={gettext("Search places")}
           field={@search_form[:q]}
@@ -40,7 +35,6 @@ defmodule TransplacesWeb.PlacesSearch do
     """
   end
 
-  @spec handle_event(<<_::112, _::_*16>>, any(), any()) :: {:noreply, any()}
   def handle_event(
         "live_select_change",
         %{"field" => _field, "id" => id, "text" => search_string},
@@ -62,9 +56,5 @@ defmodule TransplacesWeb.PlacesSearch do
 
   def handle_event("search_changed", %{"q" => place_id}, socket) do
     {:noreply, push_navigate(socket, to: ~p"/places/#{place_id}")}
-  end
-
-  def handle_event("search_submitted", _params, socket) do
-    {:noreply, socket}
   end
 end

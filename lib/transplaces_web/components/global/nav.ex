@@ -9,6 +9,7 @@ defmodule TransplacesWeb.Nav do
     assigns =
       assign(assigns, :links, [
         {~p"/", "Home"},
+        {~p"/places", "Places"},
         {~p"/auth/discord", "Login"},
         {~p"/auth/delete", "Logout"}
       ])
