@@ -1,5 +1,8 @@
 defmodule TransplacesWeb.Ratings.Form do
   use TransplacesWeb, :live_component
+
+  alias Transplaces.Ratings
+  alias Transplaces.Ratings.Rating
   alias TransplacesWeb.Components.Reviews.RatingScaleField
 
   attr :place_id, :string, required: true
@@ -18,9 +21,6 @@ defmodule TransplacesWeb.Ratings.Form do
   def render(assigns) do
     ~H"""
     <div>
-      <%!-- <pre>
-    <%= inspect(@rating_form, pretty: true) %>
-    </pre> --%>
       <h2><%= gettext("Leave a Rating") %></h2>
       <.simple_form
         for={@rating_form}
@@ -46,18 +46,43 @@ defmodule TransplacesWeb.Ratings.Form do
           label={gettext("Overall Rating")}
         />
         <:actions>
-          <.button><%= gettext("Save") %></.button>
+          <.link phx-target={@myself} phx-click="reset_form"><%= gettext("Reset") %></.link>
+          <.button><%= gettext("Submit") %></.button>
         </:actions>
       </.simple_form>
     </div>
     """
   end
 
-  def handle_event("save_rating", %{"rating" => _rating_params}, socket) do
+  def handle_event("reset_form", _, socket) do
+    {:noreply, assign(socket, rating_form: to_form(Transplaces.Ratings.rating_changeset()))}
+  end
+
+  def handle_event("save_rating", %{"rating" => rating_params}, socket) do
+    case Ratings.create_rating(rating_params) do
+      {:ok, _rating} ->
+        socket =
+          socket
+          |> put_flash(:success, gettext("Rating added!"))
+          |> assign(rating_form: to_form(Transplaces.Ratings.rating_changeset()))
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket =
+          socket
+          |> put_flash(:error, gettext("Couldn't add rating, check for errors."))
+          |> assign(rating_form: to_form(changeset))
+
+        {:noreply, socket}
+    end
+
     {:noreply, socket}
   end
 
-  def handle_event("validate", %{"rating" => _rating_params}, socket) do
-    {:noreply, socket}
+  def handle_event("validate", %{"rating" => rating_params}, socket) do
+    changeset = Rating.changeset(%Rating{}, rating_params)
+
+    {:noreply, assign(socket, rating_form: to_form(changeset))}
   end
 end

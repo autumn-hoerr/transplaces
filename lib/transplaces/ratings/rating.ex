@@ -7,10 +7,10 @@ defmodule Transplaces.Ratings.Rating do
   @type id() :: Ecto.UUID.t()
 
   schema "ratings" do
-    field :trans_friendliness_rating, :integer, default: 0
-    field :accessibility_rating, :integer, default: 0
-    field :overall_rating, :integer, default: 0
-    field :employer_rating, :integer, default: 0
+    field :trans_friendliness_rating, :integer, default: nil
+    field :accessibility_rating, :integer, default: nil
+    field :overall_rating, :integer, default: nil
+    field :employer_rating, :integer, default: nil
 
     belongs_to :place, Transplaces.Places.Place
     belongs_to :author, Transplaces.Accounts.User
@@ -33,6 +33,8 @@ defmodule Transplaces.Ratings.Rating do
       :overall_rating,
       :employer_rating
     ])
+    # TODO: add author
+    |> validate_required([:place_id])
   end
 
   def validate_has_one_of(changeset, fields) do
